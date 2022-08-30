@@ -24,24 +24,15 @@ class User:
         self.admin = False
         self.pfp = f'default'
 
-        self.wins = []
-        self.loses = []
-        self.deaths = 0
-        self.plays = 0
+        self.history = []
         self.rp = 0
 
 def end_game(info):
+
     for x in info:
 
         u = load(x['name'])
-        u.plays += 1
-        if 'Wygral' in x['check']:
-            u.wins.append(x['role'])
-        else:
-            u.loses.append(x['role'])
-        if 'Przezyl' not in x['check']:
-            u.deaths += 1
-
+        u.history.append(x)
         save(u)
 
 

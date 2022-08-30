@@ -9,8 +9,11 @@ import mod
 
 logged = False
 
-roles = ['heroine', 'rival', 'partner', 'exmidboss', 'onetruepartner', 'stageboss', 'finalboss', 'challenger', 'antiheroine',
-         'exboss', 'mobboss', 'secretboss', 'lonewolf', 'phantasmboss', 'backstage']
+roles = ['Heroine', 'Rival', 'Partner', 'EX Midboss', 'One True Partner', 'Stage Boss', 'Final Boss', 'Challenger',
+         'Anti-Heroine', 'EX Boss', 'Phantasm Boss', 'Secret Boss', 'Lone Wolf', 'Mob Boss', 'Back Stage Boss']
+
+postacie = ['Aki Minoriko', 'Alice Margatroid', 'Chen', 'Cirno', 'Clownpiece', 'Doremy Sweet', 'Eternity Larva', 'Flandre Scarlet', 'Fujiwara no Mokou', 'Futatsuiwa Mamizou', 'Hakurei Reimu', 'Hata no Kokoro', 'Hecatia Lapislazuli', 'Hijiri Byakuren', 'Hinanawi Tenshi', 'Hong Meiling', 'Horikawa Raiko', 'Hoshiguma Yuugi', 'Houjuu Nue', 'Houraisan Kaguya', 'Ibuki Suika', 'Imaizumi Kagerou', 'Izayoi Sakuya', 'Junko', 'Kaenbyou Rin', 'Kagiyama Hina', 'Kaku Seiga', 'Kamishirasawa Keine', 'Kasodani Kyouko', 'Kawashiro Nitori', 'Kazami Yuuka', 'Kijin Seija', 'Kirisame Marisa', 'Kishin Sagume', 'Kochiya Sanae', 'Komano Aun', 'Komeiji Koishi', 'Komeiji Satori', 'Konpaku Youmu', 'Kumoi Ichirin', 'Kurodani Yamame', 'Letty Whiterock', 'Mizuhashi Parsee', 'Mononobe no Futo', 'Moriya Suwako', 'Mystia Lorelei', 'Nagae Iku', 'Nazrin', 'Onozuka Komachi', 'Patchouli Knowledge', 'Prismriver Sisters', 'Reisen Udongein Inaba', 'Reiuji Utsuho', 'Remilia Scarlet', 'Rumia', 'Saigyouji Yuyuko', 'Seiran', 'Sekibanki', 'Shameimaru Aya', 'Shiki Eiki', 'Sukuna Shinmyoumaru', 'Tatara Kogasa', 'Toramaru Shou', 'Toyosatomimi no Miko', 'Usami Sumireko', 'Wakasagihime', 'Wriggle Nightbug', 'Yagokoro Eirin', 'Yakumo Ran', 'Yakumo Yukari', 'Yasaka Kanako', 'Yorigami Joon & Shion']
+
 
 pictures = {'default': 'http://remiliowo.ddns.net/default.jpg'}
 
@@ -98,16 +101,34 @@ def panel(suser = None):
     global cuser
     if suser is None:
         suser = cuser
+    rw = []
+    rl = []
     s = []
-    twins = len(suser.wins)
-    lose = len(suser.loses)
+    hist = suser.history
+    twins = 0
+    lose = 0
+    deaths = 0
+    hist.reverse()
+    for h in hist:
+        if 'Wygral' in h['check']:
+            twins += 1
+            rw.append(h['role'])
+        else:
+            lose += 1
+            rl.append(h['role'])
+        if 'Przezyl' in h['check']:
+            pass
+        else:
+            deaths += 1
+
+
     for r in roles:
         c = 0
         v = 0
-        for w in suser.wins:
+        for w in rw:
             if r == w:
                 c += 1
-        for l in suser.loses:
+        for l in rl:
             if r == l:
                 v += 1
         try:
@@ -117,6 +138,11 @@ def panel(suser = None):
 
         s.append(f'{c}W {v}L WR:{wynik}%\n')
 
+    if lose+twins == 0:
+        sumka = 1
+    else:
+        sumka = lose+twins
+    wr = round((twins/sumka)*100, 2)
 
 
     put_text(f'Zalogowano jako {cuser.nick}')
@@ -132,18 +158,39 @@ def panel(suser = None):
         put_column([
             put_text(f'Wygrane: {twins}'),
             put_text(f'Przegrane: {lose}'),
-            put_text(f'Śmierdzi: {suser.deaths}'),
+            put_text(f'Śmierdzi: {deaths}'),
             put_text(f'Gier Totalnie: {twins+lose}'),
-            put_text(f'W/R: {round((twins/1)*100, 2)}%')
+            put_text(f'W/R: {wr}%')
         ]).style(f'font-size: 25px; font-family: "Comic Sans MS", "Chalkboard SE", "Comic Neue", sans-serif; line-height: 0.8'),
 
         put_text(f'Congratulation no badge given')
     ])
     put_row([
-        put_table([['heroine', 'rival', 'partner', 'exmidboss', 'onetruepartner', 'stageboss', 'finalboss', 'challenger', 'antiheroine',
-            'exboss', 'mobboss', 'secretboss', 'lonewolf', 'phantasmboss', 'backstage'],
-            s])
+        put_table([roles,s]).style(f'width: 100%;')
     ]).style(f'padding-top: 35px;')
+    put_row([
+        put_text(f'HISTORIA GIER').style(f'font-size: 35px; font-family: "Comic Sans MS", "Chalkboard SE", "Comic Neue", sans-serif; line-height: 0.8')
+    ])
+
+
+    n = [["Postac", 'Rola', 'Win/Loss', 'Przezyl?']]
+    for h in suser.history:
+        m = []
+        m.append(h['postac'])
+        m.append(h['role'])
+        if 'Wygral' in h['check']:
+            m.append('Wygrana')
+        else:
+            m.append(f'Przegrana')
+        if 'Przezyl' in h['check']:
+            m.append(f'Przezyl')
+        else:
+            m.append(f'Smierc')
+        n.append(m)
+    put_row([
+        put_table(n).style(f'width: 100%;')
+
+    ]).style(f'font-size: 20px; font-family: "Comic Sans MS", "Chalkboard SE", "Comic Neue", sans-serif; line-height: 3')
 
 
 def menu():
@@ -153,7 +200,15 @@ def menu():
 
     for x in users:
         userki.append(mod.load(x.split('.')[0]))
-    userki.sort(key=lambda y: len(y.wins), reverse=True)
+
+    for x in userki:
+        hist = x.history
+        x.twins = 0
+        for h in hist:
+            if 'Wygral' in h['check']:
+                x.twins += 1
+
+    userki.sort(key=lambda y: y.twins, reverse=True)
 
     for h in range(0,len(userki)):
         x = userki[h]
@@ -161,7 +216,7 @@ def menu():
 
             put_image(pictures[x.pfp], width='50px', height='50px'),
             put_text(f'{x.nick}').onclick(lambda x=x: panel(x)),
-            put_text(len(x.wins))
+            put_text(x.twins)
 
         ]).style(f'font-size: 40px; font-family: "Comic Sans MS", "Chalkboard SE", "Comic Neue", sans-serif; line-height: 0.8')
 
@@ -185,6 +240,7 @@ def adduser():
     info = input_group('Add user', [
         select('Podaj Nick', userki, name='name', required=True),
         select('Podaj Role', roles, name='role', required=True),
+        select('Podaj Postac', postacie, name= 'postac', required=True),
         checkbox('Zaznacz', options=['Wygral', 'Przezyl'], name='check'),
     ], cancelable=True)
     x = (mod.load(info['name']))
@@ -204,7 +260,12 @@ def adduser():
 
     ]).style(f'font-size: 40px; font-family: "Comic Sans MS", "Chalkboard SE", "Comic Neue", sans-serif; line-height: 0.8')
 
+
+
+
+
 if __name__ == '__main__':
+
 
     start_server(cope, port=80, debug=True)
 
