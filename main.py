@@ -1,6 +1,6 @@
 from pywebio.input import input, FLOAT, input_group, NUMBER, PASSWORD, select, checkbox
 from pywebio.output import put_text, put_row, put_code, put_buttons, clear, popup, remove, put_scope, put_image, toast, \
-    put_column, put_table
+    put_column, put_table, put_grid, close_popup
 from pywebio import start_server, config
 from pywebio.session import run_js
 from pywebio_battery import get_cookie, set_cookie
@@ -15,7 +15,14 @@ roles = ['Heroine', 'Rival', 'Partner', 'EX Midboss', 'One True Partner', 'Stage
 postacie = ['Aki Minoriko', 'Alice Margatroid', 'Chen', 'Cirno', 'Clownpiece', 'Doremy Sweet', 'Eternity Larva', 'Flandre Scarlet', 'Fujiwara no Mokou', 'Futatsuiwa Mamizou', 'Hakurei Reimu', 'Hata no Kokoro', 'Hecatia Lapislazuli', 'Hijiri Byakuren', 'Hinanawi Tenshi', 'Hong Meiling', 'Horikawa Raiko', 'Hoshiguma Yuugi', 'Houjuu Nue', 'Houraisan Kaguya', 'Ibuki Suika', 'Imaizumi Kagerou', 'Izayoi Sakuya', 'Junko', 'Kaenbyou Rin', 'Kagiyama Hina', 'Kaku Seiga', 'Kamishirasawa Keine', 'Kasodani Kyouko', 'Kawashiro Nitori', 'Kazami Yuuka', 'Kijin Seija', 'Kirisame Marisa', 'Kishin Sagume', 'Kochiya Sanae', 'Komano Aun', 'Komeiji Koishi', 'Komeiji Satori', 'Konpaku Youmu', 'Kumoi Ichirin', 'Kurodani Yamame', 'Letty Whiterock', 'Mizuhashi Parsee', 'Mononobe no Futo', 'Moriya Suwako', 'Mystia Lorelei', 'Nagae Iku', 'Nazrin', 'Onozuka Komachi', 'Patchouli Knowledge', 'Prismriver Sisters', 'Reisen Udongein Inaba', 'Reiuji Utsuho', 'Remilia Scarlet', 'Rumia', 'Saigyouji Yuyuko', 'Seiran', 'Sekibanki', 'Shameimaru Aya', 'Shiki Eiki', 'Sukuna Shinmyoumaru', 'Tatara Kogasa', 'Toramaru Shou', 'Toyosatomimi no Miko', 'Usami Sumireko', 'Wakasagihime', 'Wriggle Nightbug', 'Yagokoro Eirin', 'Yakumo Ran', 'Yakumo Yukari', 'Yasaka Kanako', 'Yorigami Joon & Shion']
 
 
-pictures = {'default': 'http://remiliowo.ddns.net/default.jpg'}
+pictures = mod.load_pics()
+prices = {'Alice': 300, 'Chen': 300, 'Chen2': 300, 'Cirno': 300, 'Cirno2': 300, 'Cirnuch': 300, 'Clownpiece': 300, 'default': 0, 'Flan': 300, 'Flandre': 300, 'Kappa': 300, 'Koakuma': 300, 'Kogasa': 300, 'Koishi': 300, 'Koishi2': 300, 'Koishi3': 300, 'Kokoro': 300, 'Marisa': 300, 'Marisa2': 300, 'Marisa3': 300, 'Miko': 300, 'Miko2': 300, 'Misumaru': 300, 'Mokou': 300, 'Mokou1': 300, 'Momiji': 300, 'Okuu': 300, 'Patchouli': 300, 'Patchouli2': 300, 'Reimu': 300, 'Reimu2': 300, 'Reimu3': 300, 'Reisen': 300, 'Reisen2': 300, 'Remi': 300, 'Remilia': 300, 'Remilia2': 300, 'Remilia3': 300, 'Remilia4': 300, 'Renko': 300, 'Rumia': 300, 'Rumia2': 300, 'Sakuya': 300, 'Sanae': 300, 'Sanae2': 300, 'Satori': 300, 'Seiga': 300, 'Seiga2': 300, 'Seiga3': 300, 'Suika': 300, 'Suika2': 300, 'Suwako': 300, 'Youmuu': 300, 'Yukari': 300, 'Yukari2': 300, 'Yukari3': 300, 'Yukari4': 300, 'Yuugi': 300, 'Yuuka': 300, 'Yuyuko2': 300, 'Yuyuko3': 300, 'Yuyuko4': 300, 'Yuyuko5': 300}
+
+
+badges = {'default': 'http://remiliowo.ddns.net/nuen.jpg'}
+
+
+
 
 def btn_clk(typ):
     global gamers
@@ -36,8 +43,13 @@ def btn_clk(typ):
     elif typ == 'add':
         adduser()
     elif typ == 'finish':
-        print(gamers)
         mod.end_game(gamers)
+        clear()
+        panel()
+    elif typ == 'Store':
+        clear()
+        store()
+    elif typ == 'Back':
         clear()
         panel()
 
@@ -149,11 +161,19 @@ def panel(suser = None):
 
     if cuser.admin:
         put_buttons(['Register', 'Newgame'], onclick=btn_clk)
-    put_buttons(['Stats'], onclick=btn_clk)
-
-    put_text(f'{suser.nick}').style(f'font-size: 50px; font-family: "Comic Sans MS", "Chalkboard SE", "Comic Neue", sans-serif;')
     put_row([
-        put_image(pictures[suser.pfp], width=f'200px', height=f'200px').onclick(lambda: toast('You click the image')),
+        put_buttons(['Stats', 'Store', 'Back'], onclick=btn_clk),
+        put_text(f"RemiCoins: {cuser.rc}").style(
+            f'font-size: 25px; font-family: "Comic Sans MS", "Chalkboard SE", "Comic Neue", sans-serif; color: red')
+    ])
+
+
+    put_row([put_text(f'{suser.nick}').style(f'font-size: 50px; font-family: "Comic Sans MS", "Chalkboard SE", "Comic Neue", sans-serif;'),
+
+             ])
+
+    put_row([
+        put_image(pictures[suser.pfp], width=f'200px', height=f'200px').onclick(lambda: choose_avatar(suser)),
 
         put_column([
             put_text(f'Wygrane: {twins}'),
@@ -163,7 +183,7 @@ def panel(suser = None):
             put_text(f'W/R: {wr}%')
         ]).style(f'font-size: 25px; font-family: "Comic Sans MS", "Chalkboard SE", "Comic Neue", sans-serif; line-height: 0.8'),
 
-        put_text(f'Congratulation no badge given')
+        put_image(badges[suser.badge], width=f'200px', height=f'200px').onclick(lambda: toast('You click the badge'))
     ])
     put_row([
         put_table([roles,s]).style(f'width: 100%;')
@@ -260,6 +280,92 @@ def adduser():
 
     ]).style(f'font-size: 40px; font-family: "Comic Sans MS", "Chalkboard SE", "Comic Neue", sans-serif; line-height: 0.8')
 
+def imggen():
+    global cuser
+    m =[]
+    n = []
+    c = 0
+    for x in cuser.avatar:
+        c+=1
+        n.append(put_image(pictures[x], width='64px', height='64px', title= x).onclick(lambda x = x: choosed(x)))
+        if c == 7:
+            m.append(n.copy())
+            n = []
+            c = 0
+
+    m.append(n)
+    return m
+
+def imggen2():
+    global cuser
+    m = []
+    n = []
+    c = 0
+    for x in pictures:
+        if x not in cuser.avatar:
+            c += 1
+            n.append(put_image(pictures[x], width='64px', height='64px', title= x).onclick(lambda x = x: buy(x)))
+            n.append(put_text(f'{x}\n {prices[x]}').style(f'text-align: center;'))
+            if c == 7:
+                m.append(n.copy())
+                n = []
+                c = 0
+
+    m.append(n)
+    return m
+
+def btn_buy(typ):
+    global wybrany
+    global cuser
+    x = wybrany
+    if typ == 'Kup':
+        close_popup()
+        cuser.rc -= prices[x]
+        cuser.avatar.append(x)
+        toast(f'Kupiono {x}!')
+        mod.save(cuser)
+
+
+def buy(x):
+    global cuser
+    global wybrany
+    wybrany = x
+    if cuser.rc < prices[x]:
+        toast(f'Nie masz tyle remicoinów!')
+    else:
+        popup(f'Kupić {x} za {prices[x]}?',[
+            put_buttons(['Kup'], onclick=btn_buy)
+
+        ])
+
+
+
+
+def choosed(x):
+    global cuser
+    toast(f'Wybrano {x}')
+    cuser.pfp = x
+    mod.save(cuser)
+
+def choose_avatar(passed):
+    global cuser
+    if passed.nick == cuser.nick:
+
+
+        popup('Wybierz Avatar',[
+            put_grid(imggen(), cell_width='65px', cell_height='65px')
+
+        ])
+
+def store():
+    global cuser
+
+    put_row([
+        put_buttons(['Back'], onclick=btn_clk),
+        put_text(f"RemiCoins: {cuser.rc}").style(
+            f'font-size: 25px; font-family: "Comic Sans MS", "Chalkboard SE", "Comic Neue", sans-serif; color: red')
+    ])
+    put_grid(imggen2(), cell_width='65px', cell_height='65px')
 
 
 

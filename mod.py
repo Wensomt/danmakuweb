@@ -5,6 +5,15 @@ fold = f'users/'
 
 users = os.listdir('users')
 
+def load_pics():
+    al = os.listdir('pictures')
+    o = {}
+    for x in al:
+        with open(f'pictures/{x}', 'rb') as f:
+            obr = f.read()
+        o[x.split('.')[0]] = obr
+
+    return o
 
 def save(user):
     with open(f'{fold}{user.nick}.user', 'wb') as f:
@@ -23,9 +32,12 @@ class User:
         self.passwd = passwd
         self.admin = False
         self.pfp = f'default'
-
+        self.badges = ['default']
+        self.badge = 'default'
+        self.avatar = ['default']
         self.history = []
-        self.rp = 0
+        self.rc = 0
+        self.huj = {}
 
 def end_game(info):
 
