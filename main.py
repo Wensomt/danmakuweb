@@ -271,14 +271,16 @@ def adduser():
     if 'Przezyl' in info['check']:
         s+= f'P'
 
+
     put_row([
 
         put_image(pictures[x.pfp], width='50px', height='50px'),
         put_text(f'{x.nick}'),
         put_text(f'{info["role"]}'),
-        put_text(s)
+        put_text(s),
+        put_text(f'{info["postac"]}')
 
-    ]).style(f'font-size: 40px; font-family: "Comic Sans MS", "Chalkboard SE", "Comic Neue", sans-serif; line-height: 0.8')
+    ]).style(f'font-size: 25px; font-family: "Comic Sans MS", "Chalkboard SE", "Comic Neue", sans-serif; line-height: 0.8')
 
 def imggen():
     global cuser
