@@ -69,37 +69,36 @@ def end_game(info):
         else:
             r += 25
 
-        match x['role']:
-            case 'Heroine':
-                r += 50
-            case 'Rival':
-                r += 50
-            case 'Partner':
-                r += 0
-            case 'EX Midboss':
-                r += 25
-            case 'One True Partner':
-                r += 75
-            case 'Stage Boss':
-                r += 0
-            case 'Final Boss':
-                r += 25
-            case 'Challenger':
-                r += 50
-            case 'Anti-Heroine':
-                r += 50
-            case _:
-                r += 50
+        if x['role'] == 'Heroine':
+            r += 50
+        elif x['role'] == 'Rival':
+            r += 50
+        elif x['role'] == 'Partner':
+            r += 0
+        elif x['role'] == 'EX Midboss':
+            r += 25
+        elif x['role'] == 'One True Partner':
+            r += 75
+        elif x['role'] == 'Stage Boss':
+            r += 0
+        elif x['role'] == 'Final Boss':
+            r += 25
+        elif x['role'] == 'Challenger':
+            r += 50
+        elif x['role'] == 'Anti-Heroine':
+            r += 50
+        else:
+            r += 25
 
-        match ig:
-            case 5:
-                r = round(r*1.1)
-            case 6:
-                r = round(r*1.3)
-            case 7:
-                r = round(r*1.6)
-            case 8:
-                r = round(r*2)
+
+        if ig == 5:
+            r = round(r*1.1)
+        if ig == 6:
+            r = round(r*1.3)
+        if ig == 7:
+            r = round(r*1.6)
+        if ig == 8:
+            r = round(r*2)
 
         cirno = 0
         for y in u.history:
