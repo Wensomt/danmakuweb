@@ -5,6 +5,17 @@ fold = f'users/'
 
 users = os.listdir('users')
 
+
+def load_badge():
+    al = os.listdir('badges')
+    o = {}
+    for x in al:
+        with open(f'badges/{x}', 'rb') as f:
+            obr = f.read()
+        o[x.split('.')[0]] = obr
+
+    return o
+
 def load_pics():
     al = os.listdir('pictures')
     o = {}
@@ -89,6 +100,16 @@ def end_game(info):
                 r = round(r*1.6)
             case 8:
                 r = round(r*2)
+
+        cirno = 0
+        for y in u.history:
+            if y['postac'] == 'Cirno':
+                cirno += 1
+            if y['role'] =='Anti-Heroine':
+                cirno += 1
+        if cirno == 9:
+            if 'Baka' not in u.badges:
+                u.badges.append('Baka')
 
         u.rc = r
         save(u)
