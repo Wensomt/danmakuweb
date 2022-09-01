@@ -110,7 +110,7 @@ def end_game(info):
             if 'Baka' not in u.badges:
                 u.badges.append('Baka')
 
-        u.rc = r
+        u.rc += r
         save(u)
 
 
