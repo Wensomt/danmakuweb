@@ -1,3 +1,5 @@
+import pywebio
+import pywebio_battery
 from pywebio.input import input, FLOAT, input_group, NUMBER, PASSWORD, select, checkbox
 from pywebio.output import put_text, put_row, put_code, put_buttons, clear, popup, remove, put_scope, put_image, toast, \
     put_column, put_table, put_grid, close_popup
@@ -6,8 +8,8 @@ from pywebio.session import run_js
 from pywebio_battery import get_cookie, set_cookie
 import os
 import mod
-
-logged = False
+import threading
+import pickle
 
 roles = ['Heroine', 'Rival', 'Partner', 'EX Midboss', 'One True Partner', 'Stage Boss', 'Final Boss', 'Challenger',
          'Anti-Heroine', 'EX Boss', 'Phantasm Boss', 'Secret Boss', 'Lone Wolf', 'Mob Boss', 'Back Stage Boss']
@@ -61,9 +63,10 @@ def btn_clk(typ):
 
 @config(theme="dark")
 def cope():
-    global cuser
+    cuser = mod.load(get_cookie('login'))
     login = get_cookie('login')
     passwd = get_cookie('passwd')
+
 
     if login != None and passwd != None:
         u = mod.load(login)
@@ -90,7 +93,7 @@ def register():
     except: pass
 
 def loginf():
-    global cuser
+    
     info = input_group("Logowanie", [
         input('Podaj Nick', name='name', required=True),
         input('Podaj Haslo', name='pswd', required=True, type=PASSWORD)
@@ -104,10 +107,12 @@ def loginf():
             popup('Zle haslo!')
             loginf()
         else:
+            cuser = u
             set_cookie('login', info['name'])
             set_cookie('passwd', info['pswd'])
+
             run_js('window.location.reload()')
-            cuser = u
+
 
 
 
@@ -116,7 +121,7 @@ def loginf():
 
 def panel(suser = None):
     clear()
-    global cuser
+    cuser = mod.load(get_cookie('login'))
     if suser is None:
         suser = cuser
     rw = []
@@ -293,7 +298,7 @@ def adduser():
     ]).style(f'font-size: 25px; font-family: "Comic Sans MS", "Chalkboard SE", "Comic Neue", sans-serif; line-height: 0.8')
 
 def imggen():
-    global cuser
+    cuser = mod.load(get_cookie('login'))
     m =[]
     n = []
     c = 0
@@ -309,7 +314,7 @@ def imggen():
     return m
 
 def imggen2():
-    global cuser
+    cuser = mod.load(get_cookie('login'))
     m = []
     n = []
     c = 0
@@ -327,7 +332,7 @@ def imggen2():
     return m
 
 def badgen(suser = None):
-    global cuser
+    cuser = mod.load(get_cookie('login'))
     if suser is None:
         suser = cuser
     m = []
@@ -348,7 +353,7 @@ def badgen(suser = None):
     return m
 
 def badgen2():
-    global cuser
+    cuser = mod.load(get_cookie('login'))
     m = []
     n = []
     c = 0
@@ -367,7 +372,7 @@ def badgen2():
 
 def btn_buy(typ):
     global wybrany
-    global cuser
+    cuser = mod.load(get_cookie('login'))
     x = wybrany
     if typ == 'Kup':
         close_popup()
@@ -378,7 +383,7 @@ def btn_buy(typ):
 
 
 def buy(x):
-    global cuser
+    cuser = mod.load(get_cookie('login'))
     global wybrany
     wybrany = x
     if cuser.rc < prices[x]:
@@ -393,19 +398,19 @@ def buy(x):
 
 
 def choosed(x):
-    global cuser
+    cuser = mod.load(get_cookie('login'))
     toast(f'Wybrano {x}')
     cuser.pfp = x
     mod.save(cuser)
 
 def chooseb(x):
-    global cuser
+    cuser = mod.load(get_cookie('login'))
     toast(f'Wybrano {x}')
     cuser.badge = x
     mod.save(cuser)
 
 def choose_badge(passed):
-    global cuser
+    cuser = mod.load(get_cookie('login'))
     if passed.nick == cuser.nick:
 
 
@@ -415,7 +420,7 @@ def choose_badge(passed):
         ])
 
 def choose_avatar(passed):
-    global cuser
+    cuser = mod.load(get_cookie('login'))
     if passed.nick == cuser.nick:
 
 
@@ -425,7 +430,7 @@ def choose_avatar(passed):
         ])
 
 def store():
-    global cuser
+    cuser = mod.load(get_cookie('login'))
 
     put_row([
         put_buttons(['Back'], onclick=btn_clk),
@@ -458,7 +463,7 @@ def addbadge():
 if __name__ == '__main__':
 
 
-    start_server(cope, port=4050, debug=True, remote_acces=True)
+    start_server(cope, port=4050, debug=True)
 
 
 
