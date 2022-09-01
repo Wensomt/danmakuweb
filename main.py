@@ -26,7 +26,13 @@ badge_desp = {'Are you watching Change': 'placeholder', 'Arrest him': 'placehold
 
 
 
-
+def checklogin(u):
+    l = get_cookie('login')
+    p = get_cookie('passwd')
+    if u.nick == l and u.passwd == p:
+        return True
+    else:
+        return False
 
 def btn_clk(typ):
     global gamers
@@ -120,6 +126,9 @@ def loginf():
 def panel(suser = None):
     clear()
     cuser = mod.load(get_cookie('login'))
+    if not checklogin(cuser):
+        return
+
     if suser is None:
         suser = cuser
     rw = []
