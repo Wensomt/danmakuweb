@@ -378,6 +378,7 @@ def btn_buy(typ):
         cuser.avatar.append(x)
         toast(f'Kupiono {x}!')
         mod.save(cuser)
+        run_js('window.location.reload()')
 
 
 def buy(x):
@@ -395,17 +396,20 @@ def buy(x):
 
 
 
+
 def choosed(x):
     cuser = mod.load(get_cookie('login'))
     toast(f'Wybrano {x}')
     cuser.pfp = x
     mod.save(cuser)
+    run_js('window.location.reload()')
 
 def chooseb(x):
     cuser = mod.load(get_cookie('login'))
     toast(f'Wybrano {x}')
     cuser.badge = x
     mod.save(cuser)
+    run_js('window.location.reload()')
 
 def choose_badge(passed):
     cuser = mod.load(get_cookie('login'))
