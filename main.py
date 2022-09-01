@@ -458,7 +458,7 @@ def addbadge():
 if __name__ == '__main__':
 
 
-    start_server(cope, port=4050, debug=True)
+    start_server(cope, port=4050, debug=True, remote_acces=True)
 
 
 
