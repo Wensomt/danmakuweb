@@ -63,14 +63,12 @@ def btn_clk(typ):
 
 @config(theme="dark")
 def cope():
-    cuser = mod.load(get_cookie('login'))
     login = get_cookie('login')
     passwd = get_cookie('passwd')
 
 
     if login != None and passwd != None:
         u = mod.load(login)
-        cuser = u
         panel()
     else:
         loginf()
@@ -463,7 +461,7 @@ def addbadge():
 if __name__ == '__main__':
 
 
-    start_server(cope, port=4050, debug=True)
+    start_server(cope, port=80, debug=True)
 
 
 
