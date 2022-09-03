@@ -109,6 +109,8 @@ def end_game(info):
         if cirno == 9:
             if 'Baka' not in u.badges:
                 u.badges.append('Baka')
+                u.titles.append('The Baka')
+                r += 400
 
         u.rc += r
         save(u)
