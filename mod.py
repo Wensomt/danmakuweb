@@ -48,6 +48,8 @@ class User:
         self.avatar = ['default']
         self.history = []
         self.rc = 0
+        self.title = 'Wruszka'
+        self.titles = ['Wruszka']
         self.huj = {}
 
 
