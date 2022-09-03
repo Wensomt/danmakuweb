@@ -24,7 +24,7 @@ prices = {'Alice': 300, 'Chen': 300, 'Chen2': 300, 'Cirno': 300, 'Cirno2': 300, 
 badges = mod.load_badge()
 badge_desp = {'Are you watching Change': 'Dobierz 5 kart o wartości 1 punkta za pomocą spellcardu Junko', 'Arrest him': 'Odrzuć 7 kart poprzez efekt karty innego gracza', 'Baka': 'zagraj 9 gier jako cirno lub antiheroine (sumuje sie)', 'Cope': 'Uniknij 5 ataków w jednej turze', 'Cunny': 'Każdy z graczy gra loli postacią w grze z 6/7/8 graczy', 'default': 'Witaj nowy!', 'Dig it Dig Out': 'Podczas twojej tury z efektu jednej karty odkryjesz lub dobierzesz conajmniej 10 kart', 'Emotional Damage': 'Zadaj jednym atakiem 4 obrażenia', 'Four of a Kind': 'Posiadaj 3 extra postacie naraz', 'Neko': 'Zagraj 7 gier jako chen lub rin', 'Skill Isue': 'Wygraj jako ostani żywy gracz w grze z 7/8 graczami', 'Spin': 'Grając jako Hina spowoduj, żeby inny gracz podczas swojego draw stepu dobrał 6 kart', 'Spring Has Arrived': 'Zgin poprzez strate żyj na skutek incydentu "Lily White"', 'Tank Marisa': 'Posiadaj 4 karty Power Up jako Marisa', 'There is no escape': 'Podczas twojego main stepu inny gracz ginie nie na wskutek ataku'}
 
-avtitles = {'default': 'Wruszka', 'Baka': 'The Baka'}
+avtitles = {'default': 'Wruszka', 'Baka': 'The Baka', 'Are you watching Change': 'Patrz Change To', 'Arrest him': 'Aresztowany', 'Cope': 'Kołper', 'Cunny': 'Lolipilled', 'Dig it Dig Out': 'I love minecraft', 'Emotional Damage': 'Emotionally Unstable', 'Four of a Kind': 'Kserokopia', 'Neko': 'Neko-Chan', 'Skill Isue': 'Skilled', 'Spring Has Arrived': 'Powiew Wiosny', 'Tank Marisa': 'Chad', 'Spin': 'Sok Fortuna', 'There is no escape': 'Bez możliwości ucieczki'}
 
 
 def checklogin(u):
