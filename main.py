@@ -11,11 +11,11 @@ import mod
 import threading
 import pickle
 
-roles = ['Heroine', 'Rival', 'Partner', 'EX Midboss', 'One True Partner', 'Stage Boss', 'Final Boss', 'Challenger',
-         'Anti-Heroine', 'EX Boss', 'Phantasm Boss', 'Secret Boss', 'Lone Wolf', 'Mob Boss', 'Back Stage Boss']
 
-postacie = ['Aki Minoriko', 'Alice Margatroid', 'Chen', 'Cirno', 'Clownpiece', 'Doremy Sweet', 'Eternity Larva', 'Flandre Scarlet', 'Fujiwara no Mokou', 'Futatsuiwa Mamizou', 'Hakurei Reimu', 'Hata no Kokoro', 'Hecatia Lapislazuli', 'Hijiri Byakuren', 'Hinanawi Tenshi', 'Hong Meiling', 'Horikawa Raiko', 'Hoshiguma Yuugi', 'Houjuu Nue', 'Houraisan Kaguya', 'Ibuki Suika', 'Imaizumi Kagerou', 'Izayoi Sakuya', 'Junko', 'Kaenbyou Rin', 'Kagiyama Hina', 'Kaku Seiga', 'Kamishirasawa Keine', 'Kasodani Kyouko', 'Kawashiro Nitori', 'Kazami Yuuka', 'Kijin Seija', 'Kirisame Marisa', 'Kishin Sagume', 'Kochiya Sanae', 'Komano Aun', 'Komeiji Koishi', 'Komeiji Satori', 'Konpaku Youmu', 'Kumoi Ichirin', 'Kurodani Yamame', 'Letty Whiterock', 'Mizuhashi Parsee', 'Mononobe no Futo', 'Moriya Suwako', 'Mystia Lorelei', 'Nagae Iku', 'Nazrin', 'Onozuka Komachi', 'Patchouli Knowledge', 'Prismriver Sisters', 'Reisen Udongein Inaba', 'Reiuji Utsuho', 'Remilia Scarlet', 'Rumia', 'Saigyouji Yuyuko', 'Seiran', 'Sekibanki', 'Shameimaru Aya', 'Shiki Eiki', 'Sukuna Shinmyoumaru', 'Tatara Kogasa', 'Toramaru Shou', 'Toyosatomimi no Miko', 'Usami Sumireko', 'Wakasagihime', 'Wriggle Nightbug', 'Yagokoro Eirin', 'Yakumo Ran', 'Yakumo Yukari', 'Yasaka Kanako', 'Yorigami Joon & Shion']
-
+def read_roles():
+    return mod.read_data("roles")
+def read_postacie():
+    return mod.read_data("postacie")
 
 pictures = mod.load_pics()
 prices = {'Alice': 300, 'Chen': 300, 'Chen2': 300, 'Cirno': 300, 'Cirno2': 300, 'Cirnuch': 300, 'Clownpiece': 300, 'default': 0, 'Flan': 300, 'Flandre': 300, 'Kappa': 300, 'Koakuma': 300, 'Kogasa': 300, 'Koishi': 300, 'Koishi2': 300, 'Koishi3': 300, 'Kokoro': 300, 'Marisa': 300, 'Marisa2': 300, 'Marisa3': 300, 'Miko': 300, 'Miko2': 300, 'Misumaru': 300, 'Mokou': 300, 'Mokou1': 300, 'Momiji': 300, 'Okuu': 300, 'Patchouli': 300, 'Patchouli2': 300, 'Reimu': 300, 'Reimu2': 300, 'Reimu3': 300, 'Reisen': 300, 'Reisen2': 300, 'Remi': 300, 'Remilia': 300, 'Remilia2': 300, 'Remilia3': 300, 'Remilia4': 300, 'Renko': 300, 'Rumia': 300, 'Rumia2': 300, 'Sakuya': 300, 'Sanae': 300, 'Sanae2': 300, 'Satori': 300, 'Seiga': 300, 'Seiga2': 300, 'Seiga3': 300, 'Suika': 300, 'Suika2': 300, 'Suwako': 300, 'Youmuu': 300, 'Yukari': 300, 'Yukari2': 300, 'Yukari3': 300, 'Yukari4': 300, 'Yuugi': 300, 'Yuuka': 300, 'Yuyuko2': 300, 'Yuyuko3': 300, 'Yuyuko4': 300, 'Yuyuko5': 300, 'gamer': 700, 'fumoo': 700, 'tomasz': 800, 'troll': 1000, 'remiliacry': 3000, 'boomer': 1000, 'suwapepe': 1200}
@@ -37,6 +37,7 @@ def checklogin(u):
 
 def btn_clk(typ):
     global gamers
+    global data_add
     if typ == 'Login':
         clear()
         cope()
@@ -75,7 +76,10 @@ def btn_clk(typ):
         despedit()
     elif typ == 'Title':
         title()
-
+    elif typ == 'Dodaj Role':
+        add_role()
+    elif typ == 'Dodaj Postac':
+        add_postac()
 
 
 @config(theme="dark")
@@ -162,7 +166,7 @@ def panel(suser = None):
         else:
             deaths += 1
 
-
+    roles = read_roles()
     for r in roles:
         c = 0
         v = 0
@@ -189,7 +193,7 @@ def panel(suser = None):
     put_text(f'Zalogowano jako {cuser.nick}')
 
     if cuser.admin:
-        put_buttons(['Register', 'Newgame', 'AddBadge', 'AddRMC'], onclick=btn_clk)
+        put_buttons(['Register', 'Newgame', 'AddBadge', 'AddRMC', 'Dodaj Role', 'Dodaj Postac'], onclick=btn_clk)
     put_row([
         put_buttons(['Stats', 'Store', 'BadgeList', 'Description', 'Title', 'Back'], onclick=btn_clk),
         put_text(f"RemiCoins: {cuser.rc}").style(
@@ -216,6 +220,7 @@ def panel(suser = None):
         dupa = suser.huj['desp']
     except: dupa = f'Brak opisu'
     put_text(dupa)
+    roles = read_roles()
     put_text(f'Badges:').style(
         f'font-size: 35px; font-family: "Comic Sans MS", "Chalkboard SE", "Comic Neue", sans-serif; line-height: 0.8;padding-top: 35px;')
     put_grid(badgen(suser), cell_width='65px', cell_height='65px').style(f'padding-top: 35px;')
@@ -292,7 +297,8 @@ def adduser():
 
     for x in users:
         userki.append((x.split('.')[0]))
-
+    roles = read_roles()
+    postacie = read_postacie()
     info = input_group('Add user', [
         select('Podaj Nick', userki, name='name', required=True),
         select('Podaj Role', roles, name='role', required=True),
@@ -563,6 +569,27 @@ def title():
     ])
 
 
+def add_role():
+    rola = input('Podaj nazwe roli', required=True)
+    roles = read_roles()
+    if rola in roles:
+        popup('Istnieje juz ta rola!')
+        add_role()
+    else:
+        mod.add_data("roles",rola)
+        clear()
+        panel()
+
+def add_postac():
+    postac = input('Podaj nazwe postaci', required=True)
+    postacie = read_postacie()
+    if postac in postacie:
+        popup('Istnieje juz ta postac!')
+        add_postac()
+    else:
+        mod.add_data("postacie",postac)
+        clear()
+        panel()
 
 
 if __name__ == '__main__':
