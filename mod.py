@@ -53,10 +53,12 @@ class User:
         self.title = 'Wruszka'
         self.titles = ['Wruszka']
         self.huj = {}
-        self.won = 0
-        self.max_streak = 0
-        self.cur_streak = 0
-
+        self.wordly_won = 0
+        self.wordly_max_streak = 0
+        self.wordly_cur_streak = 0
+        self.wordly_win = False
+        self.wordly_win_today = False
+        self.wordly_tries = []
 
 def end_game(info):
 
@@ -130,3 +132,4 @@ def read_data(data):
 def add_data(data,to_add):
     with open(f'{data_file}{data}.txt', 'a') as f:
         f.write(", '"+to_add+"'")
+
