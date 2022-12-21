@@ -872,7 +872,7 @@ def wordly_reset():
             u.wordly_tries = []
             u.wordly_win_today = False
             mod.save(u)
-        wordly.new_wordly()
+    wordly.new_wordly()
 
 if __name__ == '__main__':
 
