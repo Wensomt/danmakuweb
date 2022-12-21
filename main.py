@@ -873,11 +873,10 @@ def wordly_reset():
             u.wordly_win_today = False
             mod.save(u)
         wordly.new_wordly()
-        time.sleep(10)
 
 if __name__ == '__main__':
 
-
+    wordly_reset()
     start_server(cope, port=80, debug=True)
 
 
