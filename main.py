@@ -13,6 +13,7 @@ import threading
 import pickle
 import schedule
 import wordly
+import math
 
 def read_roles():
     return mod.read_data("roles")
@@ -645,8 +646,43 @@ def wordly_buttoms(typ):
     elif typ == 'Statystyki graczy':
         clear()
         wordly_panel_players()
+    elif typ == 'Wszystkie postacie':
+        clear()
+        wordly_panel_characters()
+
+def wordly_panel_characters():
+    style = f'font-size: 30px; font-family: Helvetica, Arial, sans-serif; margin: auto; text-align: center'
+    keys = wordly_pictures.keys()
+    grid1 = []
+    grid2 = []
+    grid3 = []
+    grid4 = []
+    i = 0
+    for x in keys:
 
 
+        if i == 0:
+            grid1.append(put_image(wordly_pictures[x],width='64px', height='64px').style(style))
+            grid1.append(put_text(x).style(style))
+            i += 1
+        elif i ==1:
+            grid2.append(put_image(wordly_pictures[x],width='64px', height='64px').style(style))
+            grid2.append(put_text(x).style(style))
+            i += 1
+        elif i == 2:
+            grid3.append(put_image(wordly_pictures[x],width='64px', height='64px').style(style))
+            grid3.append(put_text(x).style(style))
+            i += 1
+        else:
+            grid4.append(put_image(wordly_pictures[x], width='64px', height='64px').style(style))
+            grid4.append(put_text(x).style(style))
+            i=0
+
+
+
+    grid = [grid1,grid2,grid3,grid4]
+    put_buttons(['Wordly'],onclick=btn_clk).style(style)
+    put_grid(grid,direction='column').style(style)
 def wordly_panel_players():
     userki = []
 
@@ -665,7 +701,7 @@ def wordly_panel_players():
         put_text(f'Zgadnietych').style(style_row_head),
         put_text(f'Najwiekszy Streak').style(style_row_head),
         put_text(f'Aktualny Streak').style(style_row_head),
-    ])
+    ]).style(style_row_head)
     style_rows_content = f'font-size: 25px; font-family: Helvetica, Arial, sans-serif; margin: auto; text-align: center'
     for h in range(0, len(userki)):
         x = userki[h]
@@ -677,7 +713,7 @@ def wordly_panel_players():
             put_text(x.wordly_max_streak).style(style_rows_content),
             put_text(x.wordly_cur_streak).style(style_rows_content),
 
-        ])
+        ]).style(style_rows_content)
 
 
 
@@ -719,8 +755,14 @@ def wordly_panel():
                 put_image(badges[cuser.badge], width=f'100px', height=f'100px').onclick(
                     lambda: choose_badge(cuser)).style(
                     f'margin: 10px'),
-                put_text(desc).style(f'font-size: 20px; font-family: Helvetica, Arial, sans-serif; margin: auto')
-            ],size = 'auto auto')
+                put_text(desc).style(f'font-size: 20px; font-family: Helvetica, Arial, sans-serif; margin: auto'),
+                put_column([
+                    put_text('Odgadniętych postaci: '+str(cuser.wordly_won)).style(style_text),
+                    put_text('Najwiekszy Streak: ' + str(cuser.wordly_max_streak)).style(style_text),
+                    put_text('Aktualny Streak: ' + str(cuser.wordly_cur_streak)).style(style_text),
+                ]).style(f'margin: auto'),
+                put_buttons(['Wszystkie postacie'],onclick=wordly_buttoms).style(f'margin: auto')
+            ],size = 'auto auto auto')
 
 
     wordly_update_content()
@@ -781,6 +823,13 @@ def wordly_create_try():
         data_row.append(wordly_create_try_helper(today_character.atrb, x.atrb))
         data.append(data_row)
 
+    put_row([
+        put_text('Legenda:',scope='Content').style(style_text).style(f'font-weight: bold; font-size: 25px'),
+        put_text('Nic się Zgadza się',scope='Content').style(style_text).style(f'font-weight: bold; color: red; font-size: 20px'),
+        put_text('Conajmniej jedno się zgadza',scope='Content').style(style_text).style(f'font-weight: bold; color: orange; font-size: 20px'),
+        put_text('Wszystko się zgadza',scope='Content').style(style_text).style(f'font-weight: bold; color: green; font-size: 20px')
+    ]).style(f'margin: auto')
+
     data_final = []
     data_final.append([put_text('Obraz', scope='Content').style(style_text).style(f'font-weight: bold'),
         put_text('Nazwa', scope='Content').style(style_text).style(f'font-weight: bold'),
@@ -793,7 +842,7 @@ def wordly_create_try():
 
     for x in data:
         data_final.append([
-                put_image(wordly_pictures[x[0][0].strip()], scope='Content').style(style_text),
+                put_image(wordly_pictures[x[0][0].strip()],width='64px',height='64px', scope='Content').style(style_text),
                 put_text(x[0][0], scope='Content').style(style_text).style(x[0][1]),
                 put_text(x[1][0], scope='Content').style(style_text).style(x[1][1]),
                 put_text(x[2][0], scope='Content').style(style_text).style(x[2][1]),
@@ -875,7 +924,7 @@ def wordly_reset():
 
 if __name__ == '__main__':
 
-    wordly_reset()
+    #wordly_reset()  #<- losuje nowa postac na kolejny dzien i resetuje zgadywanie i resetuje streak jak ktos nie zgadl ,trzeba zrobic to zeby co dzien sie ta funkcja robila o jakies godzinie
     start_server(cope, port=80, debug=True)
 
 
