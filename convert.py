@@ -12,7 +12,6 @@ for x in users:
     u.wordly_won = 0
     u.wordly_max_streak = 0
     u.wordly_cur_streak = 0
-    u.wordly_win = False
     u.wordly_win_today = False
     u.wordly_tries = []
     mod.save(u)

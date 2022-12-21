@@ -823,7 +823,6 @@ def wordly_check_for_character(char):
     user.wordly_tries.append(our_character)
     if our_character.name[0] == today_character.name[0]:
         user.wordly_win_today = True
-        user.wordly_win = True
         num = len(user.wordly_tries)
         rm = user.wordly_cur_streak
         if num < 6:
@@ -872,7 +871,6 @@ def wordly_reset():
                 u.wordly_cur_streak = 0
             u.wordly_tries = []
             u.wordly_win_today = False
-            u.wordly_win = False
             mod.save(u)
         wordly.new_wordly()
         time.sleep(10)

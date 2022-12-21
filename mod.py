@@ -56,7 +56,6 @@ class User:
         self.wordly_won = 0
         self.wordly_max_streak = 0
         self.wordly_cur_streak = 0
-        self.wordly_win = False
         self.wordly_win_today = False
         self.wordly_tries = []
 
