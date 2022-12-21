@@ -863,15 +863,14 @@ def wordly_update_content():
         wordly_check_for_character(character_choice)
 
 def wordly_reset():
-    while True:
-        users = os.listdir('users')
-        for x in users:
-            u = mod.load(x.split('.')[0])
-            if u.wordly_win_today == False:
-                u.wordly_cur_streak = 0
-            u.wordly_tries = []
-            u.wordly_win_today = False
-            mod.save(u)
+    users = os.listdir('users')
+    for x in users:
+        u = mod.load(x.split('.')[0])
+        if u.wordly_win_today == False:
+            u.wordly_cur_streak = 0
+        u.wordly_tries = []
+        u.wordly_win_today = False
+        mod.save(u)
     wordly.new_wordly()
 
 if __name__ == '__main__':
