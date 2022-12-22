@@ -812,6 +812,8 @@ def wordly_select_vali(data):
     user = mod.load(get_cookie('login'))
     if not checklogin(user):
         return
+    if user.wordly_win_today:
+        return ('name', 'Dzisiaj już zgadleś postać!')
     if not data['name'] in characters_names:
         return ('name','Nie poprawna nazwa postaci!')
     our_tries = []
@@ -819,6 +821,7 @@ def wordly_select_vali(data):
         our_tries.append(x.name[0])
     if data['name'] in our_tries:
         return ('name','Dzisiaj już zgadywałeś ta postać!')
+
 
 
 def wordly_create_try_helper(today, our):
