@@ -649,6 +649,18 @@ def wordly_buttoms(typ):
     elif typ == 'Wszystkie postacie':
         clear()
         wordly_panel_characters()
+    elif typ == 'Zgadnietych':
+        clear()
+        wordly_panel_players('won')
+    elif typ == 'Najwiekszy Streak':
+        clear()
+        wordly_panel_players('wordly_max_streak')
+    elif typ == 'Aktualny Streak':
+        clear()
+        wordly_panel_players('wordly_cur_streak')
+    elif typ == 'Średnia Ilość Prób':
+        clear()
+        wordly_panel_players('wordly_won_after')
 
 def wordly_panel_characters():
     style = f'font-size: 30px; font-family: Helvetica, Arial, sans-serif; margin: auto; text-align: center'
@@ -681,9 +693,14 @@ def wordly_panel_characters():
 
 
     grid = [grid1,grid2,grid3,grid4]
-    put_buttons(['Wordly'],onclick=btn_clk).style(style)
+    put_buttons(['Wordly'],onclick=btn_clk).style(style).style(f'font-size: 30px')
     put_grid(grid,direction='column').style(style)
-def wordly_panel_players():
+def avg(list):
+    if len(list)==0:
+        return 999
+    else:
+        return sum(list)/len(list)
+def wordly_panel_players(sort_by='wordly_won'):
     userki = []
 
     users = os.listdir('users')
@@ -691,9 +708,26 @@ def wordly_panel_players():
     for x in users:
         userki.append(mod.load(x.split('.')[0]))
 
-    userki.sort(key=lambda y: y.won, reverse=True)
-    style_row_head = f'font-size: 25px; font-family: Helvetica, Arial, sans-serif; margin: auto; text-align: center; font-weight: bold'
+
+    if sort_by == 'wordly_won':
+        userki.sort(key=lambda y: y.wordly_won, reverse=True)
+    elif sort_by == 'wordly_max_streak':
+        userki.sort(key=lambda y: y.wordly_max_streak, reverse=True)
+    elif sort_by == 'wordly_cur_streak':
+        userki.sort(key=lambda y: y.wordly_cur_streak, reverse=True)
+    elif sort_by == 'wordly_won_after':
+        userki.sort(key=lambda y: round(avg(y.wordly_won_after),2), reverse=False)
+
+
+    style_row_head = f'font-size: 30px; font-family: Helvetica, Arial, sans-serif; margin: auto; text-align: center; font-weight: bold'
     put_buttons(['Wordly'],onclick=btn_clk).style(style_row_head)
+    put_row([
+        put_text(f'Sort by').style(style_row_head),
+        put_buttons(['Zgadnietych'], onclick=wordly_buttoms).style(style_row_head),
+        put_buttons(['Najwiekszy Streak'], onclick=wordly_buttoms).style(style_row_head),
+        put_buttons(['Aktualny Streak'], onclick=wordly_buttoms).style(style_row_head),
+        put_buttons(['Średnia Ilość Prób'], onclick=wordly_buttoms).style(style_row_head)
+    ]).style(style_row_head)
     put_row([
         put_text(f'Avatar').style(style_row_head),
         put_text(f'Title').style(style_row_head),
@@ -701,10 +735,12 @@ def wordly_panel_players():
         put_text(f'Zgadnietych').style(style_row_head),
         put_text(f'Najwiekszy Streak').style(style_row_head),
         put_text(f'Aktualny Streak').style(style_row_head),
+        put_text(f'Średnia Ilość Prób').style(style_row_head)
     ]).style(style_row_head)
     style_rows_content = f'font-size: 25px; font-family: Helvetica, Arial, sans-serif; margin: auto; text-align: center'
     for h in range(0, len(userki)):
         x = userki[h]
+
         put_row([
             put_image(pictures[x.pfp], width='75px', height='75px').style(style_rows_content),
             put_text(f'{x.title}').style(style_rows_content),
@@ -712,7 +748,7 @@ def wordly_panel_players():
             put_text(x.wordly_won).style(style_rows_content),
             put_text(x.wordly_max_streak).style(style_rows_content),
             put_text(x.wordly_cur_streak).style(style_rows_content),
-
+            put_text(round(avg(x.wordly_won_after),2)).style(style_rows_content)
         ]).style(style_rows_content)
 
 
@@ -761,7 +797,11 @@ def wordly_panel():
                     put_text('Najwiekszy Streak: ' + str(cuser.wordly_max_streak)).style(style_text),
                     put_text('Aktualny Streak: ' + str(cuser.wordly_cur_streak)).style(style_text),
                 ]).style(f'margin: auto'),
-                put_buttons(['Wszystkie postacie'],onclick=wordly_buttoms).style(f'margin: auto')
+            put_column([
+                put_buttons(['Wszystkie postacie'], onclick=wordly_buttoms).style(f'margin: auto'),
+                put_text('Średnia Ilość Prób: ' + str(round(avg(cuser.wordly_won_after),2))).style(style_text)
+            ])
+
             ],size = 'auto auto auto')
 
 
@@ -887,9 +927,9 @@ def wordly_check_for_character(char):
         if user.wordly_cur_streak > user.wordly_max_streak:
             user.wordly_max_streak = user.wordly_cur_streak
         user.wordly_won +=1
+        user.wordly_won_after.append(len(user.wordly_tries))
         popup('Zgadleś postać!','Jest to twoja '+str(user.wordly_won)+' zgadnięta postać\nTwoja aktualna seria zgadniętych postaci pod rząd to '+str(user.wordly_cur_streak)+'\nZgadłeś '+str(today_character.name[0])+' po '+str(len(user.wordly_tries))+' próbach za co otrzymujesz: '+str(rm)+' RemiCoinów')
     mod.save(user)
-    #wordly_update_content()
     wordly_panel()
 
 
@@ -924,7 +964,7 @@ def wordly_reset():
 
 if __name__ == '__main__':
 
-    #wordly_reset()  #<- losuje nowa postac na kolejny dzien i resetuje zgadywanie i resetuje streak jak ktos nie zgadl ,trzeba zrobic to zeby co dzien sie ta funkcja robila o jakies godzinie
+    wordly_reset()  #<- losuje nowa postac na kolejny dzien i resetuje zgadywanie i resetuje streak jak ktos nie zgadl ,trzeba zrobic to zeby co dzien sie ta funkcja robila o jakies godzinie
     start_server(cope, port=80, debug=True)
 
 

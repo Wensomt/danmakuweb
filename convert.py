@@ -14,4 +14,5 @@ for x in users:
     u.wordly_cur_streak = 0
     u.wordly_win_today = False
     u.wordly_tries = []
+    u.wordly_won_after = []
     mod.save(u)

@@ -58,6 +58,7 @@ class User:
         self.wordly_cur_streak = 0
         self.wordly_win_today = False
         self.wordly_tries = []
+        self.wordly_won_after = []
 
 def end_game(info):
 
