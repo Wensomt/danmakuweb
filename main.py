@@ -11,7 +11,6 @@ import mod
 import time
 import threading
 import pickle
-import schedule
 import wordly
 import math
 
@@ -967,7 +966,7 @@ def wordly_reset():
 
 if __name__ == '__main__':
 
-    wordly_reset()  #<- losuje nowa postac na kolejny dzien i resetuje zgadywanie i resetuje streak jak ktos nie zgadl ,trzeba zrobic to zeby co dzien sie ta funkcja robila o jakies godzinie
+    #<- losuje nowa postac na kolejny dzien i resetuje zgadywanie i resetuje streak jak ktos nie zgadl ,trzeba zrobic to zeby co dzien sie ta funkcja robila o jakies godzinie
     start_server(cope, port=80, debug=True)
 
 

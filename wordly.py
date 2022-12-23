@@ -37,7 +37,6 @@ class Character:
 def new_wordly():
     characters = get_characters()
     character = characters[random.randint(0, len(characters))]
-    print(character.name[0])
     with open(f'{wordly_dir}today_character.wordly', 'wb') as f:
         pickle.dump(character, f)
 
