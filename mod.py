@@ -2,8 +2,10 @@ import pickle
 import os
 
 fold = f'users/'
+data_file = f'data/'
 
 users = os.listdir('users')
+
 
 
 def load_badge():
@@ -51,7 +53,12 @@ class User:
         self.title = 'Wruszka'
         self.titles = ['Wruszka']
         self.huj = {}
-
+        self.wordly_won = 0
+        self.wordly_max_streak = 0
+        self.wordly_cur_streak = 0
+        self.wordly_win_today = False
+        self.wordly_tries = []
+        self.wordly_won_after = []
 
 def end_game(info):
 
@@ -117,4 +124,12 @@ def end_game(info):
         u.rc += r
         save(u)
 
+def read_data(data):
+    with open(f'{data_file}{data}.txt', 'r') as f:
+        data_list = f.readline().split(', ')
+        return [x.replace('\'', '') for x in data_list]
+
+def add_data(data,to_add):
+    with open(f'{data_file}{data}.txt', 'a') as f:
+        f.write(", '"+to_add+"'")
 
