@@ -144,26 +144,28 @@ def register():
     except:
         pass
 
+def loginf_vali(data):
+    try:
+        u = mod.load(data['name'])
+    except:
+        u = False
+
+    if u == False:
+        return ('name','Nie ma takiego konta!')
+    elif u.passwd != data['pswd']:
+        return ('pswd','Złe hasło!')
 
 def loginf():
     info = input_group("Logowanie", [
         input('Podaj Nick', name='name', required=True),
         input('Podaj Haslo', name='pswd', required=True, type=PASSWORD)
-    ])
-    u = mod.load(info['name'])
-    if u == True:
-        popup('Nie ma takiego nicku')
-        loginf()
-    else:
-        if u.passwd != info['pswd']:
-            popup('Zle haslo!')
-            loginf()
-        else:
-            cuser = u
-            set_cookie('login', info['name'])
-            set_cookie('passwd', info['pswd'])
+    ],validate=loginf_vali)
 
-            run_js('window.location.reload()')
+    u = mod.load(info['name'])
+    cuser = u
+    set_cookie('login', info['name'])
+    set_cookie('passwd', info['pswd'])
+    run_js('window.location.reload()')
 
     clear()
 
