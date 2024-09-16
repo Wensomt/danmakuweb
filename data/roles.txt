@@ -1,0 +1,1 @@
+'Heroine', 'Rival', 'Partner', 'EX Midboss', 'One True Partner', 'Stage Boss', 'Final Boss', 'Challenger', 'Anti-Heroine', 'EX Boss', 'Phantasm Boss', 'Secret Boss', 'Lone Wolf', 'Mob Boss', 'Back Stage Boss'

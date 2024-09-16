@@ -2,30 +2,61 @@ import pywebio
 import pywebio_battery
 from pywebio.input import input, FLOAT, input_group, NUMBER, PASSWORD, select, checkbox
 from pywebio.output import put_text, put_row, put_code, put_buttons, clear, popup, remove, put_scope, put_image, toast, \
-    put_column, put_table, put_grid, close_popup
+    put_column, put_table, put_grid, close_popup, use_scope, put_button
 from pywebio import start_server, config
 from pywebio.session import run_js
 from pywebio_battery import get_cookie, set_cookie
 import os
 import mod
+import time
 import threading
 import pickle
+import wordly
+import math
 
-roles = ['Heroine', 'Rival', 'Partner', 'EX Midboss', 'One True Partner', 'Stage Boss', 'Final Boss', 'Challenger',
-         'Anti-Heroine', 'EX Boss', 'Phantasm Boss', 'Secret Boss', 'Lone Wolf', 'Mob Boss', 'Back Stage Boss']
+def read_roles():
+    return mod.read_data("roles")
 
-postacie = ['Aki Minoriko', 'Alice Margatroid', 'Chen', 'Cirno', 'Clownpiece', 'Doremy Sweet', 'Eternity Larva', 'Flandre Scarlet', 'Fujiwara no Mokou', 'Futatsuiwa Mamizou', 'Hakurei Reimu', 'Hata no Kokoro', 'Hecatia Lapislazuli', 'Hijiri Byakuren', 'Hinanawi Tenshi', 'Hong Meiling', 'Horikawa Raiko', 'Hoshiguma Yuugi', 'Houjuu Nue', 'Houraisan Kaguya', 'Ibuki Suika', 'Imaizumi Kagerou', 'Izayoi Sakuya', 'Junko', 'Kaenbyou Rin', 'Kagiyama Hina', 'Kaku Seiga', 'Kamishirasawa Keine', 'Kasodani Kyouko', 'Kawashiro Nitori', 'Kazami Yuuka', 'Kijin Seija', 'Kirisame Marisa', 'Kishin Sagume', 'Kochiya Sanae', 'Komano Aun', 'Komeiji Koishi', 'Komeiji Satori', 'Konpaku Youmu', 'Kumoi Ichirin', 'Kurodani Yamame', 'Letty Whiterock', 'Mizuhashi Parsee', 'Mononobe no Futo', 'Moriya Suwako', 'Mystia Lorelei', 'Nagae Iku', 'Nazrin', 'Onozuka Komachi', 'Patchouli Knowledge', 'Prismriver Sisters', 'Reisen Udongein Inaba', 'Reiuji Utsuho', 'Remilia Scarlet', 'Rumia', 'Saigyouji Yuyuko', 'Seiran', 'Sekibanki', 'Shameimaru Aya', 'Shiki Eiki', 'Sukuna Shinmyoumaru', 'Tatara Kogasa', 'Toramaru Shou', 'Toyosatomimi no Miko', 'Usami Sumireko', 'Wakasagihime', 'Wriggle Nightbug', 'Yagokoro Eirin', 'Yakumo Ran', 'Yakumo Yukari', 'Yasaka Kanako', 'Yorigami Joon & Shion']
+
+def read_postacie():
+    return mod.read_data("postacie")
 
 
 pictures = mod.load_pics()
-prices = {'Alice': 300, 'Chen': 300, 'Chen2': 300, 'Cirno': 300, 'Cirno2': 300, 'Cirnuch': 300, 'Clownpiece': 300, 'default': 0, 'Flan': 300, 'Flandre': 300, 'Kappa': 300, 'Koakuma': 300, 'Kogasa': 300, 'Koishi': 300, 'Koishi2': 300, 'Koishi3': 300, 'Kokoro': 300, 'Marisa': 300, 'Marisa2': 300, 'Marisa3': 300, 'Miko': 300, 'Miko2': 300, 'Misumaru': 300, 'Mokou': 300, 'Mokou1': 300, 'Momiji': 300, 'Okuu': 300, 'Patchouli': 300, 'Patchouli2': 300, 'Reimu': 300, 'Reimu2': 300, 'Reimu3': 300, 'Reisen': 300, 'Reisen2': 300, 'Remi': 300, 'Remilia': 300, 'Remilia2': 300, 'Remilia3': 300, 'Remilia4': 300, 'Renko': 300, 'Rumia': 300, 'Rumia2': 300, 'Sakuya': 300, 'Sanae': 300, 'Sanae2': 300, 'Satori': 300, 'Seiga': 300, 'Seiga2': 300, 'Seiga3': 300, 'Suika': 300, 'Suika2': 300, 'Suwako': 300, 'Youmuu': 300, 'Yukari': 300, 'Yukari2': 300, 'Yukari3': 300, 'Yukari4': 300, 'Yuugi': 300, 'Yuuka': 300, 'Yuyuko2': 300, 'Yuyuko3': 300, 'Yuyuko4': 300, 'Yuyuko5': 300, 'gamer': 700, 'fumoo': 700, 'tomasz': 800, 'troll': 1000, 'remiliacry': 3000, 'boomer': 1000, 'suwapepe': 1200}
-
+prices = {'Alice': 300, 'Chen': 300, 'Chen2': 300, 'Cirno': 300, 'Cirno2': 300, 'Cirnuch': 300, 'Clownpiece': 300,
+          'default': 0, 'Flan': 300, 'Flandre': 300, 'Kappa': 300, 'Koakuma': 300, 'Kogasa': 300, 'Koishi': 300,
+          'Koishi2': 300, 'Koishi3': 300, 'Kokoro': 300, 'Marisa': 300, 'Marisa2': 300, 'Marisa3': 300, 'Miko': 300,
+          'Miko2': 300, 'Misumaru': 300, 'Mokou': 300, 'Mokou1': 300, 'Momiji': 300, 'Okuu': 300, 'Patchouli': 300,
+          'Patchouli2': 300, 'Reimu': 300, 'Reimu2': 300, 'Reimu3': 300, 'Reisen': 300, 'Reisen2': 300, 'Remi': 300,
+          'Remilia': 300, 'Remilia2': 300, 'Remilia3': 300, 'Remilia4': 300, 'Renko': 300, 'Rumia': 300, 'Rumia2': 300,
+          'Sakuya': 300, 'Sanae': 300, 'Sanae2': 300, 'Satori': 300, 'Seiga': 300, 'Seiga2': 300, 'Seiga3': 300,
+          'Suika': 300, 'Suika2': 300, 'Suwako': 300, 'Youmuu': 300, 'Yukari': 300, 'Yukari2': 300, 'Yukari3': 300,
+          'Yukari4': 300, 'Yuugi': 300, 'Yuuka': 300, 'Yuyuko2': 300, 'Yuyuko3': 300, 'Yuyuko4': 300, 'Yuyuko5': 300,
+          'gamer': 700, 'fumoo': 700, 'tomasz': 800, 'troll': 1000, 'remiliacry': 3000, 'boomer': 1000,
+          'suwapepe': 1200}
 
 badges = mod.load_badge()
-badge_desp = {'Are you watching Change': 'Dobierz 5 kart o wartości 1 punkta za pomocą spellcardu Junko', 'Arrest him': 'Odrzuć 7 kart poprzez efekt karty innego gracza', 'Baka': 'zagraj 9 gier jako cirno lub antiheroine (sumuje sie)', 'Cope': 'Uniknij 5 ataków w jednej turze', 'Cunny': 'Każdy z graczy gra loli postacią w grze z 6/7/8 graczy', 'default': 'Witaj nowy!', 'Dig it Dig Out': 'Podczas twojej tury z efektu jednej karty odkryjesz lub dobierzesz conajmniej 10 kart', 'Emotional Damage': 'Zadaj jednym atakiem 4 obrażenia', 'Four of a Kind': 'Posiadaj 3 extra postacie naraz', 'Neko': 'Zagraj 7 gier jako chen lub rin', 'Skill Isue': 'Wygraj jako ostani żywy gracz w grze z 7/8 graczami', 'Spin': 'Grając jako Hina spowoduj, żeby inny gracz podczas swojego draw stepu dobrał 6 kart', 'Spring Has Arrived': 'Zgin poprzez strate żyj na skutek incydentu "Lily White"', 'Tank Marisa': 'Posiadaj 4 karty Power Up jako Marisa', 'There is no escape': 'Podczas twojego main stepu inny gracz ginie nie na wskutek ataku'}
+badge_desp = {'Are you watching Change': 'Dobierz 5 kart o wartości 1 punkta za pomocą spellcardu Junko',
+              'Arrest him': 'Odrzuć 7 kart poprzez efekt karty innego gracza',
+              'Baka': 'zagraj 9 gier jako cirno lub antiheroine (sumuje sie)',
+              'Cope': 'Uniknij 5 ataków w jednej turze',
+              'Cunny': 'Każdy z graczy gra loli postacią w grze z 6/7/8 graczy', 'default': 'Witaj nowy!',
+              'Dig it Dig Out': 'Podczas twojej tury z efektu jednej karty odkryjesz lub dobierzesz conajmniej 10 kart',
+              'Emotional Damage': 'Zadaj jednym atakiem 4 obrażenia',
+              'Four of a Kind': 'Posiadaj 3 extra postacie naraz', 'Neko': 'Zagraj 7 gier jako chen lub rin',
+              'Skill Isue': 'Wygraj jako ostani żywy gracz w grze z 7/8 graczami',
+              'Spin': 'Grając jako Hina spowoduj, żeby inny gracz podczas swojego draw stepu dobrał 6 kart',
+              'Spring Has Arrived': 'Zgin poprzez strate żyj na skutek incydentu "Lily White"',
+              'Tank Marisa': 'Posiadaj 4 karty Power Up jako Marisa',
+              'There is no escape': 'Podczas twojego main stepu inny gracz ginie nie na wskutek ataku'}
 
-avtitles = {'default': 'Wruszka', 'Baka': 'The Baka', 'Are you watching Change': 'Patrz Change To', 'Arrest him': 'Aresztowany', 'Cope': 'Kołper', 'Cunny': 'Lolipilled', 'Dig it Dig Out': 'I love minecraft', 'Emotional Damage': 'Emotionally Unstable', 'Four of a Kind': 'Kserokopia', 'Neko': 'Neko-Chan', 'Skill Isue': 'Skilled', 'Spring Has Arrived': 'Powiew Wiosny', 'Tank Marisa': 'Chad', 'Spin': 'Sok Fortuna', 'There is no escape': 'Bez możliwości ucieczki'}
+avtitles = {'default': 'Wruszka', 'Baka': 'The Baka', 'Are you watching Change': 'Patrz Change To',
+            'Arrest him': 'Aresztowany', 'Cope': 'Kołper', 'Cunny': 'Lolipilled', 'Dig it Dig Out': 'I love minecraft',
+            'Emotional Damage': 'Emotionally Unstable', 'Four of a Kind': 'Kserokopia', 'Neko': 'Neko-Chan',
+            'Skill Isue': 'Skilled', 'Spring Has Arrived': 'Powiew Wiosny', 'Tank Marisa': 'Chad',
+            'Spin': 'Sok Fortuna', 'There is no escape': 'Bez możliwości ucieczki'}
 
+wordly_pictures = wordly.load_pictures()
 
 def checklogin(u):
     l = get_cookie('login')
@@ -35,8 +66,10 @@ def checklogin(u):
     else:
         return False
 
+
 def btn_clk(typ):
     global gamers
+    global data_add
     if typ == 'Login':
         clear()
         cope()
@@ -75,7 +108,12 @@ def btn_clk(typ):
         despedit()
     elif typ == 'Title':
         title()
-
+    elif typ == 'Dodaj Role':
+        add_role()
+    elif typ == 'Dodaj Postac':
+        add_postac()
+    elif typ == 'Wordly':
+        wordly_panel()
 
 
 @config(theme="dark")
@@ -83,13 +121,11 @@ def cope():
     login = get_cookie('login')
     passwd = get_cookie('passwd')
 
-
     if login != None and passwd != None:
         u = mod.load(login)
         panel()
     else:
         loginf()
-
 
 
 def register():
@@ -105,36 +141,36 @@ def register():
         else:
             clear()
             panel()
-    except: pass
+    except:
+        pass
+
+def loginf_vali(data):
+    try:
+        u = mod.load(data['name'])
+    except:
+        u = False
+
+    if u == False:
+        return ('name','Nie ma takiego konta!')
+    elif u.passwd != data['pswd']:
+        return ('pswd','Złe hasło!')
 
 def loginf():
-    
     info = input_group("Logowanie", [
         input('Podaj Nick', name='name', required=True),
         input('Podaj Haslo', name='pswd', required=True, type=PASSWORD)
-    ])
+    ],validate=loginf_vali)
+
     u = mod.load(info['name'])
-    if u == True:
-        popup('Nie ma takiego nicku')
-        loginf()
-    else:
-        if u.passwd != info['pswd']:
-            popup('Zle haslo!')
-            loginf()
-        else:
-            cuser = u
-            set_cookie('login', info['name'])
-            set_cookie('passwd', info['pswd'])
-
-            run_js('window.location.reload()')
-
-
-
+    cuser = u
+    set_cookie('login', info['name'])
+    set_cookie('passwd', info['pswd'])
+    run_js('window.location.reload()')
 
     clear()
 
 
-def panel(suser = None):
+def panel(suser=None):
     clear()
     cuser = mod.load(get_cookie('login'))
     if not checklogin(cuser):
@@ -162,7 +198,7 @@ def panel(suser = None):
         else:
             deaths += 1
 
-
+    roles = read_roles()
     for r in roles:
         c = 0
         v = 0
@@ -179,24 +215,25 @@ def panel(suser = None):
 
         s.append(f'{c}W {v}L WR:{wynik}%\n')
 
-    if lose+twins == 0:
+    if lose + twins == 0:
         sumka = 1
     else:
-        sumka = lose+twins
-    wr = round((twins/sumka)*100, 2)
-
+        sumka = lose + twins
+    wr = round((twins / sumka) * 100, 2)
 
     put_text(f'Zalogowano jako {cuser.nick}')
 
+    put_buttons(['Wordly'],onclick=btn_clk)
     if cuser.admin:
-        put_buttons(['Register', 'Newgame', 'AddBadge', 'AddRMC'], onclick=btn_clk)
+        put_buttons(['Register', 'Newgame', 'AddBadge', 'AddRMC', 'Dodaj Role', 'Dodaj Postac'], onclick=btn_clk)
     put_row([
         put_buttons(['Stats', 'Store', 'BadgeList', 'Description', 'Title', 'Back'], onclick=btn_clk),
         put_text(f"RemiCoins: {cuser.rc}").style(
             f'font-size: 25px; font-family: "Comic Sans MS", "Chalkboard SE", "Comic Neue", sans-serif; color: red')
     ])
 
-    put_row([put_text(f'{suser.title} {suser.nick}').style(f'font-size: 50px; font-family: "Comic Sans MS", "Chalkboard SE", "Comic Neue", sans-serif;')
+    put_row([put_text(f'{suser.title} {suser.nick}').style(
+        f'font-size: 50px; font-family: "Comic Sans MS", "Chalkboard SE", "Comic Neue", sans-serif;')
              ])
 
     put_row([
@@ -206,27 +243,30 @@ def panel(suser = None):
             put_text(f'Wygrane: {twins}'),
             put_text(f'Przegrane: {lose}'),
             put_text(f'Śmierdzi: {deaths}'),
-            put_text(f'Gier Totalnie: {twins+lose}'),
+            put_text(f'Gier Totalnie: {twins + lose}'),
             put_text(f'W/R: {wr}%')
-        ]).style(f'font-size: 25px; font-family: "Comic Sans MS", "Chalkboard SE", "Comic Neue", sans-serif; line-height: 0.8'),
+        ]).style(
+            f'font-size: 25px; font-family: "Comic Sans MS", "Chalkboard SE", "Comic Neue", sans-serif; line-height: 0.8'),
 
         put_image(badges[suser.badge], width=f'200px', height=f'200px').onclick(lambda: choose_badge(suser))
     ])
     try:
         dupa = suser.huj['desp']
-    except: dupa = f'Brak opisu'
+    except:
+        dupa = f'Brak opisu'
     put_text(dupa)
+    roles = read_roles()
     put_text(f'Badges:').style(
         f'font-size: 35px; font-family: "Comic Sans MS", "Chalkboard SE", "Comic Neue", sans-serif; line-height: 0.8;padding-top: 35px;')
     put_grid(badgen(suser), cell_width='65px', cell_height='65px').style(f'padding-top: 35px;')
     put_row([
-        put_table([roles,s]).style(f'width: 100%;')
+        put_table([roles, s]).style(f'width: 100%;')
     ]).style(f'padding-top: 35px;')
 
     put_row([
-        put_text(f'HISTORIA GIER').style(f'font-size: 35px; font-family: "Comic Sans MS", "Chalkboard SE", "Comic Neue", sans-serif; line-height: 0.8')
+        put_text(f'HISTORIA GIER').style(
+            f'font-size: 35px; font-family: "Comic Sans MS", "Chalkboard SE", "Comic Neue", sans-serif; line-height: 0.8')
     ])
-
 
     n = [["Postac", 'Rola', 'Win/Loss', 'Przezyl?']]
     for h in suser.history:
@@ -245,7 +285,8 @@ def panel(suser = None):
     put_row([
         put_table(n).style(f'width: 100%;')
 
-    ]).style(f'font-size: 20px; font-family: "Comic Sans MS", "Chalkboard SE", "Comic Neue", sans-serif; line-height: 3')
+    ]).style(
+        f'font-size: 20px; font-family: "Comic Sans MS", "Chalkboard SE", "Comic Neue", sans-serif; line-height: 3')
 
 
 def menu():
@@ -265,7 +306,7 @@ def menu():
 
     userki.sort(key=lambda y: y.twins, reverse=True)
 
-    for h in range(0,len(userki)):
+    for h in range(0, len(userki)):
         x = userki[h]
         put_row([
 
@@ -274,7 +315,9 @@ def menu():
             put_text(f'{x.nick}').onclick(lambda x=x: panel(x)),
             put_text(x.twins)
 
-        ]).style(f'font-size: 40px; font-family: "Comic Sans MS", "Chalkboard SE", "Comic Neue", sans-serif; line-height: 0.8')
+        ]).style(
+            f'font-size: 40px; font-family: "Comic Sans MS", "Chalkboard SE", "Comic Neue", sans-serif; line-height: 0.8')
+
 
 def newgame():
     global gamers
@@ -292,21 +335,21 @@ def adduser():
 
     for x in users:
         userki.append((x.split('.')[0]))
-
+    roles = read_roles()
+    postacie = read_postacie()
     info = input_group('Add user', [
         select('Podaj Nick', userki, name='name', required=True),
         select('Podaj Role', roles, name='role', required=True),
-        select('Podaj Postac', postacie, name= 'postac', required=True),
+        select('Podaj Postac', postacie, name='postac', required=True),
         checkbox('Zaznacz', options=['Wygral', 'Przezyl'], name='check'),
     ], cancelable=True)
     x = (mod.load(info['name']))
     gamers.append(info)
     s = f'Status: '
     if 'Wygral' in info['check']:
-        s+=f'W'
+        s += f'W'
     if 'Przezyl' in info['check']:
-        s+= f'P'
-
+        s += f'P'
 
     put_row([
 
@@ -316,16 +359,18 @@ def adduser():
         put_text(s),
         put_text(f'{info["postac"]}')
 
-    ]).style(f'font-size: 25px; font-family: "Comic Sans MS", "Chalkboard SE", "Comic Neue", sans-serif; line-height: 0.8')
+    ]).style(
+        f'font-size: 25px; font-family: "Comic Sans MS", "Chalkboard SE", "Comic Neue", sans-serif; line-height: 0.8')
+
 
 def imggen():
     cuser = mod.load(get_cookie('login'))
-    m =[]
+    m = []
     n = []
     c = 0
     for x in cuser.avatar:
-        c+=1
-        n.append(put_image(pictures[x], width='64px', height='64px', title= x).onclick(lambda x = x: choosed(x)))
+        c += 1
+        n.append(put_image(pictures[x], width='64px', height='64px', title=x).onclick(lambda x=x: choosed(x)))
         if c == 7:
             m.append(n.copy())
             n = []
@@ -333,6 +378,7 @@ def imggen():
 
     m.append(n)
     return m
+
 
 def imggen2():
     cuser = mod.load(get_cookie('login'))
@@ -342,7 +388,7 @@ def imggen2():
     for x in pictures:
         if x not in cuser.avatar:
             c += 1
-            n.append(put_image(pictures[x], width='64px', height='64px', title= x).onclick(lambda x = x: buy(x)))
+            n.append(put_image(pictures[x], width='64px', height='64px', title=x).onclick(lambda x=x: buy(x)))
             n.append(put_text(f'{x}\n {prices[x]}').style(f'text-align: center;'))
             if c == 7:
                 m.append(n.copy())
@@ -352,7 +398,8 @@ def imggen2():
     m.append(n)
     return m
 
-def badgen(suser = None):
+
+def badgen(suser=None):
     cuser = mod.load(get_cookie('login'))
     if suser is None:
         suser = cuser
@@ -363,7 +410,7 @@ def badgen(suser = None):
         if x in suser.badges:
             y = badge_desp[x]
             c += 1
-            n.append(put_image(badges[x], width='64px', height='64px', title= x).onclick(lambda y=y: popup(y)))
+            n.append(put_image(badges[x], width='64px', height='64px', title=x).onclick(lambda y=y: popup(y)))
             n.append(put_text(f'{x}').style(f'text-align: center;'))
             if c == 7:
                 m.append(n.copy())
@@ -373,22 +420,24 @@ def badgen(suser = None):
     m.append(n)
     return m
 
+
 def badgen3():
     m = []
     n = []
     c = 0
     for x in badges:
-            y = badge_desp[x]
-            c += 1
-            n.append(put_image(badges[x], width='64px', height='64px', title= x).onclick(lambda y=y: popup(y)))
-            n.append(put_text(f'{x}').style(f'text-align: center;'))
-            if c == 6:
-                m.append(n.copy())
-                n = []
-                c = 0
+        y = badge_desp[x]
+        c += 1
+        n.append(put_image(badges[x], width='64px', height='64px', title=x).onclick(lambda y=y: popup(y)))
+        n.append(put_text(f'{x}').style(f'text-align: center;'))
+        if c == 6:
+            m.append(n.copy())
+            n = []
+            c = 0
 
     m.append(n)
     return m
+
 
 def badgen2():
     cuser = mod.load(get_cookie('login'))
@@ -398,7 +447,7 @@ def badgen2():
     for x in badges:
         if x in cuser.badges:
             c += 1
-            n.append(put_image(badges[x], width='64px', height='64px', title= x).onclick(lambda x=x: chooseb(x)))
+            n.append(put_image(badges[x], width='64px', height='64px', title=x).onclick(lambda x=x: chooseb(x)))
             if c == 7:
                 m.append(n.copy())
                 n = []
@@ -428,13 +477,10 @@ def buy(x):
     if cuser.rc < prices[x]:
         toast(f'Nie masz tyle remicoinów!')
     else:
-        popup(f'Kupić {x} za {prices[x]}?',[
+        popup(f'Kupić {x} za {prices[x]}?', [
             put_buttons(['Kup'], onclick=btn_buy)
 
         ])
-
-
-
 
 
 def choosed(x):
@@ -444,6 +490,7 @@ def choosed(x):
     mod.save(cuser)
     run_js('window.location.reload()')
 
+
 def chooseb(x):
     cuser = mod.load(get_cookie('login'))
     toast(f'Wybrano {x}')
@@ -451,25 +498,24 @@ def chooseb(x):
     mod.save(cuser)
     run_js('window.location.reload()')
 
+
 def choose_badge(passed):
     cuser = mod.load(get_cookie('login'))
     if passed.nick == cuser.nick:
-
-
-        popup('Wybierz Odznake',[
+        popup('Wybierz Odznake', [
             put_grid(badgen2(), cell_width='65px', cell_height='65px')
 
         ])
 
+
 def choose_avatar(passed):
     cuser = mod.load(get_cookie('login'))
     if passed.nick == cuser.nick:
-
-
-        popup('Wybierz Avatar',[
+        popup('Wybierz Avatar', [
             put_grid(imggen(), cell_width='65px', cell_height='65px')
 
         ])
+
 
 def store():
     cuser = mod.load(get_cookie('login'))
@@ -503,6 +549,7 @@ def addbadge():
     mod.save(u)
     panel()
 
+
 def addRMC():
     userki = []
 
@@ -518,11 +565,13 @@ def addRMC():
     u.rc += rm
     mod.save(u)
 
+
 def showbadges():
     put_buttons(['Back'], onclick=btn_clk)
     put_row([
         put_grid(badgen3(), cell_width='65px', cell_height='65px')
     ])
+
 
 def despedit():
     cuser = mod.load(get_cookie('login'))
@@ -530,6 +579,7 @@ def despedit():
     cuser.huj['desp'] = desp
     mod.save(cuser)
     run_js('window.location.reload()')
+
 
 def tytch(x):
     cuser = mod.load(get_cookie('login'))
@@ -563,12 +613,364 @@ def title():
     ])
 
 
+def add_role():
+    rola = input('Podaj nazwe roli', required=True)
+    roles = read_roles()
+    if rola in roles:
+        popup('Istnieje juz ta rola!')
+        add_role()
+    else:
+        mod.add_data("roles", rola)
+        clear()
+        panel()
 
+
+def add_postac():
+    postac = input('Podaj nazwe postaci', required=True)
+    postacie = read_postacie()
+    if postac in postacie:
+        popup('Istnieje juz ta postac!')
+        add_postac()
+    else:
+        mod.add_data("postacie", postac)
+        clear()
+        panel()
+
+### ---------------------------------------------------------------------------------------
+#                                   Wordly
+### ---------------------------------------------------------------------------------------
+
+def wordly_buttoms(typ):
+    if typ == 'Wróć do danmmaku':
+        clear()
+        panel()
+    elif typ == 'Statystyki graczy':
+        clear()
+        wordly_panel_players()
+    elif typ == 'Wszystkie postacie':
+        clear()
+        wordly_panel_characters()
+    elif typ == 'Zgadnietych':
+        clear()
+        wordly_panel_players('won')
+    elif typ == 'Najwiekszy Streak':
+        clear()
+        wordly_panel_players('wordly_max_streak')
+    elif typ == 'Aktualny Streak':
+        clear()
+        wordly_panel_players('wordly_cur_streak')
+    elif typ == 'Średnia Ilość Prób':
+        clear()
+        wordly_panel_players('wordly_won_after')
+
+def wordly_panel_characters():
+    style = f'font-size: 30px; font-family: Helvetica, Arial, sans-serif; margin: auto; text-align: center'
+    keys = wordly_pictures.keys()
+    grid1 = []
+    grid2 = []
+    grid3 = []
+    grid4 = []
+    i = 0
+    for x in keys:
+
+
+        if i == 0:
+            grid1.append(put_image(wordly_pictures[x],width='64px', height='64px').style(style))
+            grid1.append(put_text(x).style(style))
+            i += 1
+        elif i ==1:
+            grid2.append(put_image(wordly_pictures[x],width='64px', height='64px').style(style))
+            grid2.append(put_text(x).style(style))
+            i += 1
+        elif i == 2:
+            grid3.append(put_image(wordly_pictures[x],width='64px', height='64px').style(style))
+            grid3.append(put_text(x).style(style))
+            i += 1
+        else:
+            grid4.append(put_image(wordly_pictures[x], width='64px', height='64px').style(style))
+            grid4.append(put_text(x).style(style))
+            i=0
+
+
+
+    grid = [grid1,grid2,grid3,grid4]
+    put_buttons(['Wordly'],onclick=btn_clk).style(style).style(f'font-size: 30px')
+    put_grid(grid,direction='column').style(style)
+def avg(list):
+    if len(list)==0:
+        return 999
+    else:
+        return sum(list)/len(list)
+def wordly_panel_players(sort_by='wordly_won'):
+    userki = []
+
+    users = os.listdir('users')
+
+    for x in users:
+        userki.append(mod.load(x.split('.')[0]))
+
+
+    if sort_by == 'wordly_won':
+        userki.sort(key=lambda y: y.wordly_won, reverse=True)
+    elif sort_by == 'wordly_max_streak':
+        userki.sort(key=lambda y: y.wordly_max_streak, reverse=True)
+    elif sort_by == 'wordly_cur_streak':
+        userki.sort(key=lambda y: y.wordly_cur_streak, reverse=True)
+    elif sort_by == 'wordly_won_after':
+        userki.sort(key=lambda y: round(avg(y.wordly_won_after),2), reverse=False)
+
+
+    style_row_head = f'font-size: 30px; font-family: Helvetica, Arial, sans-serif; margin: auto; text-align: center; font-weight: bold'
+    put_buttons(['Wordly'],onclick=btn_clk).style(style_row_head)
+    put_row([
+        put_text(f'Sort by').style(style_row_head),
+        put_buttons(['Zgadnietych'], onclick=wordly_buttoms).style(style_row_head),
+        put_buttons(['Najwiekszy Streak'], onclick=wordly_buttoms).style(style_row_head),
+        put_buttons(['Aktualny Streak'], onclick=wordly_buttoms).style(style_row_head),
+        put_buttons(['Średnia Ilość Prób'], onclick=wordly_buttoms).style(style_row_head)
+    ]).style(style_row_head)
+    put_row([
+        put_text(f'Avatar').style(style_row_head),
+        put_text(f'Title').style(style_row_head),
+        put_text(f'Nazwa').style(style_row_head),
+        put_text(f'Zgadnietych').style(style_row_head),
+        put_text(f'Najwiekszy Streak').style(style_row_head),
+        put_text(f'Aktualny Streak').style(style_row_head),
+        put_text(f'Średnia Ilość Prób').style(style_row_head)
+    ]).style(style_row_head)
+    style_rows_content = f'font-size: 25px; font-family: Helvetica, Arial, sans-serif; margin: auto; text-align: center'
+    for h in range(0, len(userki)):
+        x = userki[h]
+
+        put_row([
+            put_image(pictures[x.pfp], width='75px', height='75px').style(style_rows_content),
+            put_text(f'{x.title}').style(style_rows_content),
+            put_text(f'{x.nick}').style(style_rows_content),
+            put_text(x.wordly_won).style(style_rows_content),
+            put_text(x.wordly_max_streak).style(style_rows_content),
+            put_text(x.wordly_cur_streak).style(style_rows_content),
+            put_text(round(avg(x.wordly_won_after),2)).style(style_rows_content)
+        ]).style(style_rows_content)
+
+
+
+def wordly_panel():
+    clear()
+    style_text = f'font-size: 25px; font-family: Helvetica, Arial, sans-serif; margin: auto; text-align: center'
+    cuser = mod.load(get_cookie('login'))
+    if not checklogin(cuser):
+        return
+    put_column([
+        put_scope('Top'),
+        put_scope('Content'),
+    ],size = 'auto auto')
+    with use_scope('Top'):
+        put_row([
+            put_column([
+                put_buttons(['Wróć do danmmaku'], onclick=wordly_buttoms).style(f'margin: auto'),
+                put_buttons(['Statystyki graczy'], onclick=wordly_buttoms).style(f'margin: auto')
+            ]),
+            put_column([
+                put_buttons(['Store'], onclick=btn_clk).style(f'margin: auto'),
+                put_buttons(['BadgeList'], onclick=btn_clk).style(f'margin: auto')
+            ]),
+            put_column([
+                put_buttons(['Title'], onclick=btn_clk).style(f'margin: auto'),
+                put_buttons(['Description'], onclick=btn_clk).style(f'margin: auto')
+            ]),
+            put_text(f'{cuser.title}\n{cuser.nick}').style(style_text),
+            put_image(pictures[cuser.pfp], width=f'100px', height=f'100px').onclick(lambda: choose_avatar(cuser)),
+            put_text(f"RemiCoins: {cuser.rc}").style(
+                f'font-size: 25px; font-family: Helvetica, Arial, sans-serif; color: red; margin: auto')
+
+        ],size='auto auto auto auto auto auto')
+        try:
+            desc = cuser.huj['desp']
+        except:
+            desc = f'Brak opisu'
+        put_row([
+                put_image(badges[cuser.badge], width=f'100px', height=f'100px').onclick(
+                    lambda: choose_badge(cuser)).style(
+                    f'margin: 10px'),
+                put_text(desc).style(f'font-size: 20px; font-family: Helvetica, Arial, sans-serif; margin: auto'),
+                put_column([
+                    put_text('Odgadniętych postaci: '+str(cuser.wordly_won)).style(style_text),
+                    put_text('Najwiekszy Streak: ' + str(cuser.wordly_max_streak)).style(style_text),
+                    put_text('Aktualny Streak: ' + str(cuser.wordly_cur_streak)).style(style_text),
+                ]).style(f'margin: auto'),
+            put_column([
+                put_buttons(['Wszystkie postacie'], onclick=wordly_buttoms).style(f'margin: auto'),
+                put_text('Średnia Ilość Prób: ' + str(round(avg(cuser.wordly_won_after),2))).style(style_text)
+            ])
+
+            ],size = 'auto auto auto')
+
+
+    wordly_update_content()
+
+def wordly_select_vali(data):
+    global characters_names
+    user = mod.load(get_cookie('login'))
+    if not checklogin(user):
+        return
+    if user.wordly_win_today:
+        return ('name', 'Dzisiaj już zgadleś postać!')
+    if not data['name'] in characters_names:
+        return ('name','Nie poprawna nazwa postaci!')
+    our_tries = []
+    for x in user.wordly_tries:
+        our_tries.append(x.name[0])
+    if data['name'] in our_tries:
+        return ('name','Dzisiaj już zgadywałeś ta postać!')
+
+
+
+def wordly_create_try_helper(today, our):
+    wrong = f'color: red'
+    something = f'color: orange'
+    good = f'color: green'
+
+    have = len(today)
+    our_have = len(our)
+    agreed = 0
+    for y in today:
+        for z in our:
+            if z == y:
+                agreed += 1
+
+    entire_string = ''
+    for x in our:
+        entire_string+= ' '+x
+
+    if agreed == have and have == our_have:
+        return [entire_string.strip(), good]
+    elif agreed > 0 :
+        return [entire_string.strip(), something]
+    else:
+        return  [entire_string.strip(),wrong]
+def wordly_create_try():
+    style_text = f'font-size: 25px; font-family: Helvetica, Arial, sans-serif; margin: 5px; text-align: center'
+
+    user = mod.load(get_cookie('login'))
+    if not checklogin(user):
+        return
+    today_character = wordly.get_today_character()
+    data = []
+    for x in user.wordly_tries:
+        data_row = []
+        data_row.append(wordly_create_try_helper(today_character.name, x.name))
+        data_row.append(wordly_create_try_helper(today_character.race, x.race))
+        data_row.append(wordly_create_try_helper(today_character.home, x.home))
+        data_row.append(wordly_create_try_helper(today_character.first, x.first))
+        data_row.append(wordly_create_try_helper(today_character.head, x.head))
+        data_row.append(wordly_create_try_helper(today_character.hair, x.hair))
+        data_row.append(wordly_create_try_helper(today_character.atrb, x.atrb))
+        data.append(data_row)
+
+    put_row([
+        put_text('Legenda:',scope='Content').style(style_text).style(f'font-weight: bold; font-size: 25px'),
+        put_text('Nic się Zgadza się',scope='Content').style(style_text).style(f'font-weight: bold; color: red; font-size: 20px'),
+        put_text('Conajmniej jedno się zgadza',scope='Content').style(style_text).style(f'font-weight: bold; color: orange; font-size: 20px'),
+        put_text('Wszystko się zgadza',scope='Content').style(style_text).style(f'font-weight: bold; color: green; font-size: 20px')
+    ]).style(f'margin: auto')
+
+    data_final = []
+    data_final.append([put_text('Obraz', scope='Content').style(style_text).style(f'font-weight: bold'),
+        put_text('Nazwa', scope='Content').style(style_text).style(f'font-weight: bold'),
+        put_text('Rasa', scope='Content').style(style_text).style(f'font-weight: bold'),
+        put_text('Lokacja', scope='Content').style(style_text).style(f'font-weight: bold'),
+        put_text('Pierwsze wystąpienie', scope='Content').style(style_text).style(f'font-weight: bold'),
+        put_text('Nakrycie głowy', scope='Content').style(style_text).style(f'font-weight: bold'),
+        put_text('Kolor włosów', scope='Content').style(style_text).style(f'font-weight: bold'),
+        put_text('Atrybut', scope='Content').style(style_text).style(f'font-weight: bold')])
+
+    for x in data:
+        data_final.append([
+                put_image(wordly_pictures[x[0][0].strip()],width='64px',height='64px', scope='Content').style(style_text),
+                put_text(x[0][0], scope='Content').style(style_text).style(x[0][1]),
+                put_text(x[1][0], scope='Content').style(style_text).style(x[1][1]),
+                put_text(x[2][0], scope='Content').style(style_text).style(x[2][1]),
+                put_text(x[3][0], scope='Content').style(style_text).style(x[3][1]),
+                put_text(x[4][0], scope='Content').style(style_text).style(x[4][1]),
+                put_text(x[5][0], scope='Content').style(style_text).style(x[5][1]),
+                put_text(x[6][0], scope='Content').style(style_text).style(x[6][1])
+        ])
+    put_grid(data_final).style(style_text)
+
+
+
+
+
+
+def wordly_check_for_character(char):
+    global characters
+    user = mod.load(get_cookie('login'))
+    if not checklogin(user):
+        return
+    today_character = wordly.get_today_character()
+    our_character = []
+    for c in characters:
+        if char['name'] == c.name[0]:
+            our_character = c
+            break
+    user.wordly_tries.append(our_character)
+    if our_character.name[0] == today_character.name[0]:
+        user.wordly_win_today = True
+        num = len(user.wordly_tries)
+        rm = user.wordly_cur_streak
+        if num < 6:
+            rm += 20
+        elif num < 11:
+            rm += 15
+        elif num < 21:
+            rm += 10
+        else:
+            rm += 5
+        user.rc += rm
+        user.wordly_cur_streak+=1
+        if user.wordly_cur_streak > user.wordly_max_streak:
+            user.wordly_max_streak = user.wordly_cur_streak
+        user.wordly_won +=1
+        user.wordly_won_after.append(len(user.wordly_tries))
+        popup('Zgadleś postać!','Jest to twoja '+str(user.wordly_won)+' zgadnięta postać\nTwoja aktualna seria zgadniętych postaci pod rząd to '+str(user.wordly_cur_streak)+'\nZgadłeś '+str(today_character.name[0])+' po '+str(len(user.wordly_tries))+' próbach za co otrzymujesz: '+str(rm)+' RemiCoinów')
+    mod.save(user)
+    wordly_panel()
+
+
+def wordly_update_content():
+    clear('Content')
+    style_text = f'font-size: 35px; font-family: Helvetica, Arial, sans-serif; margin: auto; text-align: center'
+    global characters
+    characters = wordly.get_characters()
+    global characters_names
+    characters_names = []
+    for x in characters:
+        characters_names.append(x.name[0])
+
+    user = mod.load(get_cookie('login'))
+    if not checklogin(user):
+        return
+    wordly_create_try()
+    if not user.wordly_win_today:
+        character_choice = input_group('Zgadnij dzisiejszą Touhou postać!',[input('Wybierz postać' ,  name='name' ,datalist= characters_names)],validate=wordly_select_vali)
+        wordly_check_for_character(character_choice)
+
+def wordly_reset():
+    users = os.listdir('users')
+    for x in users:
+        u = mod.load(x.split('.')[0])
+        if u.wordly_win_today == False:
+            u.wordly_cur_streak = 0
+        u.wordly_tries = []
+        u.wordly_win_today = False
+        mod.save(u)
+    wordly.new_wordly()
 
 if __name__ == '__main__':
 
-
+    #<- losuje nowa postac na kolejny dzien i resetuje zgadywanie i resetuje streak jak ktos nie zgadl ,trzeba zrobic to zeby co dzien sie ta funkcja robila o jakies godzinie
     start_server(cope, port=80, debug=True)
+
 
 
 
